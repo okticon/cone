@@ -149,6 +149,37 @@
             function alertText(number) {
                 alert(`${number}번째 추억이에요! 눌러주셔서 감사합니다 :)`);
             }
+
+            // 구글 드라이브 사진 연동
+            // 1. 드라이브에서 사진 공유를 '링크가 있는 모든 사용자'로 바꾸고 링크를 복사
+            // 2. 아래 driveImages에 사진 순서대로 링크(또는 파일 ID)를 붙여넣기
+            // 3. 비워두거나 불러오기에 실패하면 저장소의 img 파일이 그대로 보여짐
+            const driveImages = {
+                image1: "",
+                image2: "",
+                image3: "",
+            };
+
+            // 공유 링크에서 파일 ID만 뽑아냄 (ID만 넣어도 동작)
+            function getDriveId(link) {
+                const match = link.match(/\/d\/([\w-]+)/) || link.match(/[?&]id=([\w-]+)/);
+                return match ? match[1] : link.trim();
+            }
+
+            // 사진을 미리 불러와 보고, 성공했을 때만 배경으로 바꿔줌
+            function loadDriveImages() {
+                for (const [elementId, link] of Object.entries(driveImages)) {
+                    if (!link) continue;
+                    const url = `https://drive.google.com/thumbnail?id=${getDriveId(link)}&sz=w1000`;
+                    const img = new Image();
+                    img.onload = () => {
+                        document.getElementById(elementId).style.backgroundImage = `url("${url}")`;
+                    };
+                    img.src = url;
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", loadDriveImages);
         </script>
 </head>
 <body>
